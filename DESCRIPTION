@@ -1,10 +1,10 @@
-Package: maximumentropy
+Package: AMI
 Type: Package
 Title: Multinomial Logistic Regression
 Version: 0.4
 Date: 2014-09-06
 Author: Jean-Philippe Fauconnier
-Maintainer: Jean-Philippe Fauconnier <jean.philippe.fauconnier arb gmail.com>
+Maintainer: Jean-Philippe Fauconnier <jean.philippe.fauconnier@gmail.com>
 Description: This R Package allows to use a multinomial logistic regression
     with binary and real-valued features.
 License: GNU GPL

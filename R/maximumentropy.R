@@ -7,7 +7,7 @@
 #' @examples
 
 
-maximumentropy <- function(x, y=NULL, data=NULL, iteration=NULL, verbose=TRUE, method=c("L-BFGS-B", "GIS", "CG", "BFGS"), addslack=FALSE, normalize=FALSE){
+maximumentropy <- function(x, y=NULL, data=NULL, iteration=NULL, verbose=TRUE, method=c("L-BFGS-B", "GIS", "CG", "BFGS"), addslack=TRUE, normalize=FALSE){
   
   # Using formula
   if(class(x) == "formula" && !is.null(data)){
@@ -65,6 +65,7 @@ maximumentropy <- function(x, y=NULL, data=NULL, iteration=NULL, verbose=TRUE, m
     GIS_object <- GIS(x=x,y=y,obsCounts=obsCounts, iteration=iteration, verbose=verbose)
     model <- list("levels" = levels(y), "lambda"=GIS_object$lambda, "value"=GIS_object$value, "features" = features_names, "convergence" = GIS_object$convergence, "method"= method[1], "iteration" = GIS_object$iteration)
   }
+  
   class(model) <- "maximumentropy"
   return(invisible(model))
 }
@@ -122,6 +123,8 @@ GIS <- function(x=x,y=y,obsCounts=obsCounts,iteration=NULL,verbose=FALSE){
         flag <- 0;
         convergence <- 0;
       }
+      
+      
       
       if(previousLog > log_likelihood){
         flag <- 0;
@@ -246,7 +249,7 @@ getConditionalProbability <- function(x,y,lambda){
   
 
   vec <- sum(margin.table(conditional_probability,1));
-  vec <- round(vec,digits=2)
+  #vec <- round(vec,digits=2)
   if(vec != as.numeric(nb_observations) ){
     cat("Erreur : ","\n")
     print(sprintf("observations %d\n", as.numeric(nb_observations) ))
@@ -340,10 +343,11 @@ predict.maximumentropy <- function (model, x)  {
   lambda <- model$lambda;
   nb_classes <- length(model$levels)
   internal_levels <- model$levels;
-  nb_features <- length(lambda) / nb_classes;
+  nb_features <- length(lambda) / nb_classes
+  y <- model$levels;
   
   if(ncol(x) < nb_features){
-    cat("Add Slack feature")
+    #cat("Add Slack feature")
     x$slack <- rep(1,nrow(x)) #slack features
   }
   
@@ -362,7 +366,9 @@ predict.maximumentropy <- function (model, x)  {
     predict_y <- c(predict_y,internal_levels[argmax_p])
   }
   predict_y <- as.factor(predict_y)
-  return(invisible(predict_y));
+  result <- data.frame(label=predict_y)
+  result <- cbind(result, conditional_probability)
+  result
 }
 
 
